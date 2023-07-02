@@ -16,18 +16,33 @@ export class PostService {
   ) {}
   
 
-  async create(post: CreatePostDto) {
+
+  async create(post: CreatePostDto, id:number) {
     
-    const user = await this.userRepository.findOne({where:{id:1}})
+    const user = await this.userRepository.findOneBy({id})
     const newPost = await this.postRepository.create(post);
     newPost.user = user
     return this.postRepository.save(newPost) ;
   }
 
+  
+
+  async getPosts(id: number){
+    const user = await this.userRepository.findOneBy({id})
+    return user.posts
+    
+  }
+
+
    findAll() {
     
     return this.postRepository.find()
 
+  }
+
+
+  markAsDone(id: number, updatePostDto: UpdatePostDto){
+    return this.postRepository.update(id,updatePostDto)
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

@@ -14,8 +14,17 @@ export class Post extends BaseEntity {
     })
     postText: string
 
+    @Column({
+    type: "varchar",
+    default: "onGoing"
+  })
+  status: string
+
+
   @CreateDateColumn()
     created_at: Date
+
+  
 
     
    @ManyToOne(()=> User ,(user) =>user.posts,{onDelete:'CASCADE'})

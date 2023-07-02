@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {  UserGuard } from 'src/user/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -22,10 +23,15 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+
+  
+  @UseGuards(UserGuard)
   @Patch(':id')
   update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
+
+
 
   @Delete(':id')
   remove(@Param('id') id: number) {
@@ -38,11 +44,6 @@ export class UserController {
     return this.userService.signIn(data.email,data.password)
   }
 
-  @Get('getPosts/:id')
-  getPosts(@Param ('id') id: number){
-    return this.userService.getPosts(id);
-
-  }
 
 
 

@@ -4,11 +4,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    private jwtService: JwtService
   ) {}
 
   async signUp(createUserDto: CreateUserDto) {
@@ -49,20 +51,19 @@ export class UserService {
 
 const actualPassword = user.password
 if(password == actualPassword){
-  return true
+  const payload = { sub: user.id, email: user.email, username:user.userName };
+  
+  return {
+    access_token: await this.jwtService.signAsync(payload),
+  };
 
 }else{
-  throw new HttpException('Wrong Password',HttpStatus.FORBIDDEN)
+  throw new HttpException('Wrong Password',HttpStatus.UNAUTHORIZED)
 }
 }
 
 }
 
 
-async getPosts(id: number){
-  const user = await this.userRepository.findOneBy({id})
-  return user.posts
-  
-}
 
 }
