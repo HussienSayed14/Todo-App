@@ -45,6 +45,10 @@ export class PostService {
     return this.postRepository.update(id,updatePostDto)
   }
 
+  removeDone(id: number, updatePostDto: UpdatePostDto){
+    return this.postRepository.update(id,updatePostDto)
+  }
+
   update(id: number, updatePostDto: UpdatePostDto) {
     return this.postRepository.update(id,updatePostDto);
   }

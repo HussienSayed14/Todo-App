@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -35,7 +35,7 @@ export class PostController {
 
 
   
-  @UseGuards(UserGuard)
+ 
   @Patch('updatePost/:id')
   update(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(id, updatePostDto);
@@ -43,7 +43,7 @@ export class PostController {
 
 
   
-  @UseGuards(UserGuard)
+ 
   @Patch('markAsDone/:id')
   markAsDone(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto) {
     updatePostDto.status = "Done"
@@ -51,8 +51,17 @@ export class PostController {
     return this.postService.markAsDone(id, updatePostDto);
   }
 
+ 
+  @Patch('removeDone/:id')
+  RemoveDone(@Param('id') id: number, @Body() updatePostDto: UpdatePostDto) {
+    updatePostDto.status = "onGoing"
+    
+    return this.postService.removeDone(id, updatePostDto);
+  }
 
-  
+
+
+   
   @UseGuards(UserGuard)
   @Delete('deletePost/:id')
   remove(@Param('id') id: number) {
