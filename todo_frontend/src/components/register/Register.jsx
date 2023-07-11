@@ -13,7 +13,8 @@ import {
   MDBCardImage,
   MDBInput,
   MDBIcon,
-  MDBCheckbox
+  MDBCheckbox,
+  MDBSpinner
 }
 from 'mdb-react-ui-kit';
 
@@ -22,26 +23,10 @@ function App() {
   
 const [email, setEmail] = useState("");
 const [password, setPass] = useState("");
+const [loading, setLoading] = useState(false); // New state for loading
 const [user_name, setUserN] = useState("");
-const [data, setData] = useState({
-    userName:"",
-    email:"",
-    password:""
-  });
 
 
-  function textChange () {
-        
-    setUserN(document.getElementsByName('user_name')[0].value);
-    setEmail(document.getElementsByName('email')[0].value);
-    setPass(document.getElementsByName('password')[0].value);
-    setData({
-        email:email,
-        password:password,
-        userName:user_name
-    })
-   
- }
 
 
  const handleUsernameChange = (event) => {
@@ -61,18 +46,21 @@ const handleEmailChange= (event) => {
 
  const RegisterFun =async (e)=>{
   e.preventDefault();
+  setLoading(true)
+  const HOST = import.meta.env.VITE_HOST
   const newData = {
     email:email,
     password:password,
     userName:user_name
   }
   console.log(newData)
-   axios.post('http://localhost:3000/user/signup',newData).then((response) =>{
+   axios.post(`${HOST}/user/signup`,newData).then(() =>{
     window.alert("User Added")
     window.location='/'
     
 }).catch(err =>{
     window.alert(err.response.data.message );
+    setLoading(false)
   })
 }
   return (
@@ -104,6 +92,21 @@ const handleEmailChange= (event) => {
 
               <MDBBtn className='mb-4' size='lg' onClick={RegisterFun}>Register</MDBBtn>
               <a href='/'><u>Already have an account?</u></a>
+              {loading && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px", // Adjust the height as needed
+              fontSize: "20px",
+              fontWeight: "bold",
+            }}>
+            <MDBSpinner role="status">
+              <span className="visually-hidden">Loading...</span>
+            </MDBSpinner>
+          </div>
+        )}
               
 
             </MDBCol>

@@ -1,4 +1,3 @@
-
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import './HomePage.css'
@@ -19,6 +18,7 @@ import {
   MDBTabsItem,
   MDBTabsLink,
   MDBTabsPane,
+  MDBSpinner
 } from "mdb-react-ui-kit";
 import axios from 'axios';
 import Container from 'react-bootstrap/Container';
@@ -33,10 +33,15 @@ export default function App() {
   const [active, setActive] = useState("tab1");
   const [allPosts, setAllPost] = useState([]);
   const [PostText,setPost] = useState("")
+  const [loading, setLoading] = useState(false); // New state for loading
  
   const id = localStorage.getItem('id')
 
 
+
+function setLoader(){
+  setLoading(true)
+}
 
 
 const handelPostChange = (event) => {
@@ -49,12 +54,14 @@ const handelPostChange = (event) => {
 
 const createPost = (e)=>{
     e.preventDefault();
+    
     const headers = { 'Authorization': 'Bearer '+token };
     const newData = {
       postText:PostText
       
     }
-    axios.post(`http://localhost:3000/post/createPost/${id}`,newData,{headers}).then((response) =>{
+    const HOST = import.meta.env.VITE_HOST
+    axios.post(`${HOST}/post/createPost/${id}`,newData,{headers}).then((response) =>{
       console.log(response)
       window.location.reload()
 }).catch(err =>{
@@ -83,12 +90,17 @@ const createPost = (e)=>{
  
 
  useEffect(()=>{
-    
-    const headers = { 'Authorization': 'Bearer '+token };
-    axios.get(`http://localhost:3000/post/getPosts/${id}`,{headers}).then((response) =>{
+   const HOST = import.meta.env.VITE_HOST
+   const headers = { 'Authorization': 'Bearer '+token };
+   setLoading(true)
+    axios.get(`${HOST}/post/getPosts/${id}`,{headers}).then((response) =>{
         console.log(response.data)
+        setLoading(false)
         setAllPost(response.data)
-    }).catch(err => console.log(err))
+    }).catch(err =>{
+      setLoading(false)
+      window.alert(err.response.data.message)
+    })
       
 
  },[] )
@@ -108,10 +120,11 @@ const createPost = (e)=>{
   
   function changeState(val)  {
       const idd = val.id
+      const HOST = import.meta.env.VITE_HOST
       if(val.status === "onGoing"){
        
     
-    axios.patch(`http://localhost:3000/post/markAsDone/${idd}`).then((response) =>{
+    axios.patch(`${HOST}/post/markAsDone/${idd}`).then((response) =>{
       console.log(response)
       window.location.reload()
 }).catch(err =>{
@@ -122,7 +135,7 @@ const createPost = (e)=>{
 
     }else{
       const headers = { 'Authorization': 'Bearer '+token };
-        axios.patch(`http://localhost:3000/post/removeDone/${idd}`).then((response) =>{
+        axios.patch(`${HOST}/post/removeDone/${idd}`).then((response) =>{
             console.log(response)
             window.location.reload()
       }).catch(err =>{
@@ -141,8 +154,9 @@ const createPost = (e)=>{
  
  
   const deletePost =(postId)=>  {
+    const HOST = import.meta.env.VITE_HOST
     const headers = { 'Authorization': 'Bearer '+token };
-    axios.delete(`http://localhost:3000/post/deletePost/${postId}`,{headers}).then((response) =>{
+    axios.delete(`${HOST}/post/deletePost/${postId}`,{headers}).then((response) =>{
       console.log(response)
       window.location.reload()
 }).catch(err =>{
@@ -198,6 +212,7 @@ const createPost = (e)=>{
                     Add Post
                   </MDBBtn>
                 </div>
+                
                 <MDBTabs className="mb-4 pb-2">
                   <MDBTabsItem>
                     <MDBTabsLink
@@ -224,6 +239,22 @@ const createPost = (e)=>{
                     </MDBTabsLink>
                   </MDBTabsItem>
                 </MDBTabs>
+                {loading && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "2.5rem", // Adjust the height as needed
+              fontSize: "20px",
+              fontWeight: "bold",
+              marginBottom: '1.5rem'
+            }}>
+            <MDBSpinner role="status">
+              <span className="visually-hidden">Loading...</span>
+            </MDBSpinner>
+          </div>
+        )}
                 <MDBTabsContent>
                   <MDBTabsPane show={active === "tab1"}>
                     <MDBListGroup className="mb-0">

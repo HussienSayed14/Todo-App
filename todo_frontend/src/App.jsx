@@ -7,6 +7,7 @@ import HomePage from './components/home_page/HomePage.jsx'
 function App() {
   const [count, setCount] = useState(0)
 
+  
   return (
    <div>
     <Router>

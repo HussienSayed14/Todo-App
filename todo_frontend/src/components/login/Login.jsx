@@ -1,15 +1,17 @@
 import React from 'react';
-import {MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
+import {MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox,MDBSpinner } from 'mdb-react-ui-kit';
 import './Login.css'
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import { useRef, useState,useEffect } from "react";
+import {  useState } from "react";
 
 
 function Login() {
-
+  
+  
+    const [loading, setLoading] = useState(false); // New state for loading
     const [email, setEmail] = useState("");
     const [password, setPass] = useState("");
     
@@ -28,12 +30,15 @@ function Login() {
 
     const LoginFun = (e)=>{
         e.preventDefault();
+        setLoading(true)
+        const HOST = import.meta.env.VITE_HOST
         const newData = {
           email:email,
           password:password,
           
         }
-        axios.post('http://localhost:3000/user/signIn',newData).then((response) =>{
+        axios.post(`${HOST}/user/signIn`,newData).then((response) =>{
+          
           const token = response.data.access_token
           localStorage.setItem("Token",token)
           const decoded = jwt_decode(token);
@@ -41,8 +46,11 @@ function Login() {
           localStorage.setItem("email",decoded.email)
           localStorage.setItem("username",decoded.username)
           window.location='/homePage'
+          setLoading(false)
+          
  }).catch(err =>{
           window.alert(err.response.data.message ) ;
+          setLoading(false)
         })
     }
   return (
@@ -91,6 +99,21 @@ function Login() {
         </MDBCol>
 
       </MDBRow>
+      {loading && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px", // Adjust the height as needed
+              fontSize: "20px",
+              fontWeight: "bold",
+            }}>
+            <MDBSpinner role="status">
+              <span className="visually-hidden">Loading...</span>
+            </MDBSpinner>
+          </div>
+        )}
 
       
 
